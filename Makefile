@@ -1,5 +1,6 @@
 WORKERS=4
-PROMETHEUS_MULTIPROC_DIR="/tmp/prom"
+# Use a fixed shared directory for persistent stats across reboots.
+PROMETHEUS_MULTIPROC_DIR=$(shell mktemp -d)
 
 all: run
 
