@@ -24,7 +24,7 @@ app = Flask(__name__)
 
 
 # Expose metrics.
-@app.route("/stats")
+@app.route("/metrics")
 @in_progress(method='GET', endpoint='/stats')
 #@IN_PROGRESS.labels(method='GET', endpoint='/stats').track_inprogress()
 def stats():
