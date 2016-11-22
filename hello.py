@@ -5,7 +5,6 @@ from prometheus_client import (
     multiprocess,
     generate_latest,
     CollectorRegistry,
-    CONTENT_TYPE_LATEST,
     Counter,
     Gauge,
 )
@@ -25,10 +24,10 @@ app = Flask(__name__)
 
 # Expose metrics.
 @app.route("/metrics")
-@in_progress(method='GET', endpoint='/stats')
-#@IN_PROGRESS.labels(method='GET', endpoint='/stats').track_inprogress()
-def stats():
-    REQUESTS.labels(method='GET', endpoint='/stats').inc()
+@in_progress(method='GET', endpoint='/metrics')
+#@IN_PROGRESS.labels(method='GET', endpoint='/metrics').track_inprogress()
+def metrics():
+    REQUESTS.labels(method='GET', endpoint='/metrics').inc()
     registry = CollectorRegistry()
     multiprocess.MultiProcessCollector(registry)
     data = generate_latest(registry)
