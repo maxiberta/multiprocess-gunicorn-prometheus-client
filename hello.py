@@ -2,11 +2,12 @@ import os
 
 from flask import Flask
 from prometheus_client import (
-    multiprocess,
-    generate_latest,
     CollectorRegistry,
     Counter,
     Gauge,
+    REGISTRY,
+    generate_latest,
+    multiprocess,
 )
 
 
@@ -28,8 +29,11 @@ app = Flask(__name__)
 #@IN_PROGRESS.labels(method='GET', endpoint='/metrics').track_inprogress()
 def metrics():
     REQUESTS.labels(method='GET', endpoint='/metrics').inc()
-    registry = CollectorRegistry()
-    multiprocess.MultiProcessCollector(registry)
+    if 'prometheus_multiproc_dir' in os.environ:
+        registry = CollectorRegistry()
+        multiprocess.MultiProcessCollector(registry)
+    else:
+        registry = REGISTRY
     data = generate_latest(registry)
     return (data, {'content-type': 'text/plain'})
 
