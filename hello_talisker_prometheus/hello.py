@@ -23,21 +23,6 @@ def in_progress(**kwargs):
 app = Flask(__name__)
 
 
-# Expose metrics.
-#@app.route("/metrics")
-@in_progress(method='GET', endpoint='/metrics')
-#@IN_PROGRESS.labels(method='GET', endpoint='/metrics').track_inprogress()
-def metrics():
-    REQUESTS.labels(method='GET', endpoint='/metrics').inc()
-    if 'prometheus_multiproc_dir' in os.environ:
-        registry = CollectorRegistry()
-        multiprocess.MultiProcessCollector(registry)
-    else:
-        registry = REGISTRY
-    data = generate_latest(registry)
-    return (data, {'content-type': 'text/plain'})
-
-
 @app.route("/")
 @in_progress(method='GET', endpoint='/')
 #@IN_PROGRESS.labels(method='GET', endpoint='/').track_inprogress()
