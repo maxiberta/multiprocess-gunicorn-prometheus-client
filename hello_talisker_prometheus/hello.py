@@ -1,4 +1,11 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+
 import os
+import random
+import time
 
 from flask import Flask
 from prometheus_client import (
@@ -6,6 +13,7 @@ from prometheus_client import (
     Counter,
     Gauge,
     REGISTRY,
+    Summary,
     generate_latest,
     multiprocess,
 )
@@ -13,6 +21,7 @@ from prometheus_client import (
 
 IN_PROGRESS = Gauge("inprogress_requests", "help", ["method", "endpoint"], multiprocess_mode='livesum')
 REQUESTS = Counter("total_requests", "help", ["method", "endpoint"])
+REQUEST_TIME = Summary('request_processing_seconds', 'Time spent processing request')
 
 
 def in_progress(**kwargs):
@@ -25,9 +34,12 @@ app = Flask(__name__)
 
 @app.route("/")
 @in_progress(method='GET', endpoint='/')
-#@IN_PROGRESS.labels(method='GET', endpoint='/').track_inprogress()
+@REQUEST_TIME.time()
 def hello():
     REQUESTS.labels(method='GET', endpoint='/').inc()
+    # Simulate some work
+    time.sleep(random.random())
+
     return "[{}] Hello World!".format(os.getpid())
 
 
