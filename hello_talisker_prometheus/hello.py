@@ -21,7 +21,7 @@ from prometheus_client import (
 
 IN_PROGRESS = Gauge("inprogress_requests", "help", ["method", "endpoint"], multiprocess_mode='livesum')
 REQUESTS = Counter("total_requests", "help", ["method", "endpoint"])
-REQUEST_TIME = Summary('request_processing_seconds', 'Time spent processing request')
+REQUEST_TIME = Summary('request_processing_seconds', 'Time spent processing request', ["method", "endpoint"])
 
 
 def in_progress(**kwargs):
@@ -29,12 +29,17 @@ def in_progress(**kwargs):
     return IN_PROGRESS.labels(**kwargs).track_inprogress()
 
 
+def request_time(**kwargs):
+    """Quick hack for SyntaxError on decorator with multiple chained calls."""
+    return REQUEST_TIME.labels(**kwargs).time()
+
+
 app = Flask(__name__)
 
 
 @app.route("/")
 @in_progress(method='GET', endpoint='/')
-@REQUEST_TIME.time()
+@request_time(method='GET', endpoint='/')
 def hello():
     REQUESTS.labels(method='GET', endpoint='/').inc()
     # Simulate some work
