@@ -7,7 +7,7 @@ import os
 import random
 import time
 
-from flask import Flask
+from flask import Flask, redirect
 from prometheus_client import (
     CollectorRegistry,
     Counter,
@@ -39,8 +39,12 @@ def hello():
     REQUESTS.labels(method='GET', endpoint='/').inc()
     # Simulate some work
     time.sleep(random.random())
-
     return "[{}] Hello World!".format(os.getpid())
+
+
+@app.route('/metrics')
+def metrics():
+        return redirect('/_status/metrics')
 
 
 if __name__ == "__main__":
