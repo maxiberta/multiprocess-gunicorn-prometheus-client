@@ -1,11 +1,13 @@
 WORKERS=4
-# Use a fixed shared directory for persistent stats across reboots.
-PROMETHEUS_MULTIPROC_DIR=$(shell mktemp -d)
+VENV_PATH = env
+BIN = $(VENV_PATH)/bin
 
 all: run
 
-$(PROMETHEUS_MULTIPROC_DIR):
-	mkdir -p $(PROMETHEUS_MULTIPROC_DIR)
+run:
+	DEVEL=1 $(BIN)/talisker --access-logfile=- hello_talisker_prometheus.hello:app --reload -w$(WORKERS)
 
-run: $(PROMETHEUS_MULTIPROC_DIR)
-	DEVEL= prometheus_multiproc_dir=$(PROMETHEUS_MULTIPROC_DIR) talisker --access-logfile=- hello:app --reload -w$(WORKERS)
+wheels:
+	$(BIN)/pip wheel . -w wheels
+
+.PHONY: wheels
