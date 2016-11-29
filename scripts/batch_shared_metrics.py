@@ -15,24 +15,25 @@ from prometheus_client import (
 )
 
 
-JOB_DURATION = Summary('my_shared_metrics_batch_job_duration_seconds', 'Duration of my batch job in seconds.')
+JOB_DURATION = Summary(
+    'my_shared_metrics_batch_job_duration_seconds',
+    'Duration of my batch job in seconds.')
+RESULT = Gauge(
+    'my_shared_metrics_batch_job_result', 'This is a test',
+    multiprocess_mode='max')
+LAST_SUCCESS = Gauge(
+    'my_shared_metrics_batch_job_last_success_unixtime',
+    'Last time my batch job succeeded, in unixtime.',
+    multiprocess_mode='max')
 
 
 @JOB_DURATION.time()
 def main():
-    # A separate registry is used, as the default registry may contain other
-    # metrics such as those from the Process Collector.
-    registry = CollectorRegistry()
     # Simulate some work
     time.sleep(random.random())
-    # Some random gauge
-    result = Gauge(
-        'my_shared_metrics_batch_job_result', 'This is a test', registry=registry)
-    result.set(random.random())
-    # Batch job success timestamp
-    last_success = Gauge(
-        'my_shared_metrics_batch_job_last_success_unixtime', 'Last time my batch job succeeded, in unixtime.', registry=registry)
-    last_success.set_to_current_time()
+    # Set metrics
+    RESULT.set(random.random())
+    LAST_SUCCESS.set_to_current_time()
 
 
 if __name__ == '__main__':
