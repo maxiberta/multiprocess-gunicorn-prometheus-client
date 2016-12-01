@@ -1,3 +1,4 @@
-talisker[prometheus]
+git+https://github.com/canonical-ols/talisker.git#egg=talisker
 Flask
 prometheus-client
+celery

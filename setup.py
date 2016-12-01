@@ -6,7 +6,7 @@ with open('README.md') as readme_file:
     readme = readme_file.read()
 
 install_requires = [
-    'talisker[prometheus]',
+    'talisker[celery,prometheus]',
     'Flask',
 ]
 

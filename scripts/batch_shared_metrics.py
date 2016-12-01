@@ -20,7 +20,7 @@ JOB_DURATION = Summary(
     'Duration of my batch job in seconds.')
 RESULT = Gauge(
     'my_shared_metrics_batch_job_result', 'This is a test',
-    multiprocess_mode='max')
+    multiprocess_mode='all')
 LAST_SUCCESS = Gauge(
     'my_shared_metrics_batch_job_last_success_unixtime',
     'Last time my batch job succeeded, in unixtime.',

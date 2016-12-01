@@ -7,15 +7,12 @@ import os
 import random
 import time
 
-from flask import Flask, redirect
+from flask import Flask, redirect, request
 from prometheus_client import (
     CollectorRegistry,
     Counter,
     Gauge,
-    REGISTRY,
     Summary,
-    generate_latest,
-    multiprocess,
 )
 
 
@@ -47,9 +44,22 @@ def hello():
     return "[{}] Hello World!".format(os.getpid())
 
 
+@app.route('/task')
+@in_progress(method='GET', endpoint='/task')
+@request_time(method='GET', endpoint='/task')
+def task():
+    from . tasks import add
+    x = int(request.args.get('x', 0))
+    y = int(request.args.get('y', 0))
+    t = add.delay(x, y)
+    return "Queued task add({x}, {y}) with id {t.id}".format(**locals())
+
+
 @app.route('/metrics')
+@in_progress(method='GET', endpoint='/metrics')
+@request_time(method='GET', endpoint='/metrics')
 def metrics():
-        return redirect('/_status/metrics')
+    return redirect('/_status/metrics')
 
 
 if __name__ == "__main__":
